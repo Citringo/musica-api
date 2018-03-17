@@ -22,7 +22,7 @@ Xeltica が制作に携わった楽曲のデータにアクセスできる，res
 $ git clone https://github.com/citringo/musica-api
 $ cd musica-api
 $ npm install
-$ mysql –local-infile -u xelmus -p 12345
+$ mysql –-local-infile -u xelmus -p 12345
 ```
 
 ```sql
