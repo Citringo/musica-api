@@ -3,7 +3,6 @@ var config = require("../config");
 var mysql = require("promise-mysql");
 var LINQ = require("node-linq").LINQ;
 
-
 var router = express.Router();
 
 var sql_config = {
@@ -26,13 +25,7 @@ var getList = async () => {
   return list;
 };
 
-// display_id: "ARG_001",
-// title: "海岸線ワールドトリップ",
-// description: "メルビル氏に依頼され制作した曲．",
-// client: "Melville ",
-// source: "",
-// music_type: "編曲",
-// is_completed: 0
+const idPattern = /^(XEL|ARG)_(\d{3})([A-Z])?(?:v(\d))?$/;
 
 const check = (s, k) => s.display_id.toLowerCase().includes(k)  ||
                         s.title.toLowerCase().includes(k)       ||
@@ -44,6 +37,11 @@ const check = (s, k) => s.display_id.toLowerCase().includes(k)  ||
 router.get("/list/", async (req, res, next) => {
   var o = {ok: true,　path: "https://files.citringo.net/music/"};
   o.music = await getList();
+  
+  if (o.music.length == 0) {
+    o = { ok: false, error: "Requested items are not found" };
+    res.status(404);
+  }
   res.json(o);
 });
 
@@ -51,6 +49,7 @@ router.get("/search", async (req, res, next) => {
   var o = {};
   if (!req.query.keyword) {
     o.ok = false;
+    res.status(404);
     o.error = "please set 'keyword' query";
   }
   else {
@@ -59,6 +58,30 @@ router.get("/search", async (req, res, next) => {
     o.music = new LINQ(await getList())
             .Where(v => keys.every(k => check(v, k.toLowerCase())))
             .ToArray();
+    if (o.music.length == 0) {
+      o = { ok: false, error: "Requested items are not found" };
+      res.status(404);
+    }
+  }
+  res.json(o);
+});
+
+router.get("/relative/:id", async(req, res, next) => {
+  var o = {};
+
+  if (!idPattern.test(req.params.id)) {
+    res.json({ ok: false, error: "invalid id pattern"});
+    return;
+  }
+  var id = idPattern.exec(req.params.id);
+  var connection = await mysql.createConnection(sql_config);
+  o.music = await connection.query("SELECT songs.display_id, songs.title, songs.description, clients.name as client, songs.source, music_types.name as music_type, songs.is_completed " +
+  "from songs, clients, music_types " +
+  "where clients.id = songs.client_id and music_types.id = songs.music_type_id and songs.number = ? and songs.display_id like ? and songs.display_id <> ?;", [Number(id[2]), `${id[1]}%`, req.params.id]);
+  
+  if (o.music.length == 0) {
+    o = { ok: false, error: "Requested items are not found" };
+    res.status(404);
   }
   res.json(o);
 });
