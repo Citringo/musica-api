@@ -16,7 +16,7 @@ Xeltica が制作に携わった楽曲のデータにアクセスできる，res
 - ユーザー名 = xelmus
 - パスワード = 12345
 
-とし，上記のデータベースとユーザーを予め作っているものとする．
+とし，上記のデータベースとユーザーを予め作っているものとします．
 
 ```shell
 $ git clone https://github.com/citringo/musica-api
