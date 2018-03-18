@@ -17,6 +17,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use("/v1", index);
 
+app.use(function(req, res, next) {
+	var mes = 404 + " Cannot " + req.method + " " + req.path;
+	var error = new Error(mes);
+	error.message = mes;
+	next(error);
+});
+
+app.use((err, req, res, next) => {
+	console.log(err);
+	res.json({ok: false, error: err.message});
+});
+
 
 
 module.exports = app;
