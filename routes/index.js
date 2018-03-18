@@ -67,8 +67,7 @@ router.get("/search", async (req, res, next) => {
 });
 
 router.get("/relative/:id", async(req, res, next) => {
-  var o = {};
-
+  var o = {ok: true};
   if (!idPattern.test(req.params.id)) {
     res.json({ ok: false, error: "invalid id pattern"});
     return;
