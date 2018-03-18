@@ -85,6 +85,29 @@ router.get("/relative/:id", async(req, res, next) => {
   res.json(o);
 });
 
+router.get("/:id", async(req, res, next) => {
+  var o = {ok: true};
+
+  if (!idPattern.test(req.params.id)) {
+    res.json({ ok: false, error: "invalid id pattern"});
+    return;
+  }
+
+  var connection = await mysql.createConnection(sql_config);
+  var music = await connection.query("SELECT songs.display_id, songs.title, songs.description, clients.name as client, songs.source, music_types.name as music_type, songs.is_completed " +
+  "from songs, clients, music_types " +
+  "where clients.id = songs.client_id and music_types.id = songs.music_type_id and songs.display_id = ?;", [req.params.id]);
+  
+  if (music.length == 0) {
+    o = { ok: false, error: "Requested items are not found" };
+    res.status(404);
+    res.json(o);
+    return;
+  }
+  o.music = music[0];
+  res.json(o);
+});
+
 router.use((req, res) => {
   res.status(404);
   res.json({ok: false, error: "Not Found"});
