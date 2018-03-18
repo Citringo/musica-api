@@ -5,7 +5,6 @@ var LINQ = require("node-linq").LINQ;
 
 var router = express.Router();
 
-var defaultObj = {ok: true, music_url: "http://files.citringo.net/music/"};
 
 var sql_config = {
   host: config.db.host,
@@ -37,7 +36,7 @@ const check = (s, k) => s.display_id.toLowerCase().includes(k)  ||
                         s.music_type.toLowerCase().includes(k);
 
 router.get("/list/", async (req, res, next) => {
-  var o = defaultObj;
+  var o = {ok: true, music_url: "http://files.citringo.net/music/"};
   o.music = await getList();
   
   if (o.music.length == 0) {
@@ -48,7 +47,7 @@ router.get("/list/", async (req, res, next) => {
 });
 
 router.get("/search", async (req, res, next) => {
-  var o = defaultObj;
+  var o = {ok: true, music_url: "http://files.citringo.net/music/"};
   if (!req.query.keyword) {
     o.ok = false;
     res.status(404);
@@ -69,7 +68,7 @@ router.get("/search", async (req, res, next) => {
 });
 
 router.get("/relative/:id", async(req, res, next) => {
-  var o = defaultObj;
+  var o = {ok: true, music_url: "http://files.citringo.net/music/"};
   if (!idPattern.test(req.params.id)) {
     res.json({ ok: false, error: "invalid id pattern"});
     return;
@@ -88,7 +87,7 @@ router.get("/relative/:id", async(req, res, next) => {
 });
 
 router.get("/:id", async(req, res, next) => {
-  var o = defaultObj;
+  var o = {ok: true, music_url: "http://files.citringo.net/music/"};
 
   if (!idPattern.test(req.params.id)) {
     res.json({ ok: false, error: "invalid id pattern"});
