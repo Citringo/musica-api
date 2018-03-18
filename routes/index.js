@@ -5,7 +5,7 @@ var LINQ = require("node-linq").LINQ;
 
 var router = express.Router();
 
-var defaultObj = {ok: true, music_url: "https://files.citringo.net/music/"};
+var defaultObj = {ok: true, music_url: "http://files.citringo.net/music/"};
 
 var sql_config = {
   host: config.db.host,
