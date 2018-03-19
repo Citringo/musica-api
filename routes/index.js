@@ -78,7 +78,7 @@ router.get("/relative/:id", async(req, res, next) => {
   o.music = await connection.query("SELECT songs.display_id, songs.title, songs.description, clients.name as client, songs.source, music_types.name as music_type, songs.is_completed " +
   "from songs, clients, music_types " +
   "where clients.id = songs.client_id and music_types.id = songs.music_type_id and songs.number = ? and songs.display_id like ? and songs.display_id <> ?;", [Number(id[2]), `${id[1]}%`, req.params.id]);
-  
+  await connection.end();
   if (o.music.length == 0) {
     o = { ok: false, error: "Requested items are not found" };
     res.status(404);
@@ -105,6 +105,7 @@ router.get("/:id", async(req, res, next) => {
     res.json(o);
     return;
   }
+  await connection.end();
   o.music = music[0];
   res.json(o);
 });
